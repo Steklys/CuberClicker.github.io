@@ -321,7 +321,7 @@ transition: all 0.3s;
         
         <div class="click-area">
             <button id="click-button">
-                <img id="device-image" src="https://cdn-icons-png.flaticon.com/512/3097/3097133.png" alt="Устройство">
+                <img id="device-image" src="https://cdn1.ozone.ru/s3/multimedia-1-0/7082148672.jpg" alt="Устройство">
                 <div class="device-name" id="device-name">M5StickC Plus 2</div>
             </button>
         </div>
@@ -333,7 +333,7 @@ transition: all 0.3s;
             <div class="upgrade">
                 <h3>Улучшенный клик</h3>
                 <p>Увеличивает количество очков за клик на 1</p>
-                <p>Стоимость: <span class="cost">500</span> очков</p>
+                <p>Стоимость: <span class="cost">300</span> очков</p>
                 <p>Уровень: <span class="level">0</span></p>
                 <button onclick="buyUpgrade(0)">Купить</button>
             </div>
@@ -341,7 +341,7 @@ transition: all 0.3s;
             <div class="upgrade">
                 <h3>Двойной клик</h3>
                 <p>Удваивает ваши очки за клик</p>
-                <p>Стоимость: <span class="cost">2800</span> очков</p>
+                <p>Стоимость: <span class="cost">1500</span> очков</p>
                 <p>Уровень: <span class="level">0</span></p>
                 <button onclick="buyUpgrade(1)">Купить</button>
             </div>
@@ -349,7 +349,7 @@ transition: all 0.3s;
             <div class="upgrade">
                 <h3>Автокликер</h3>
                 <p>Автоматически кликает каждые 5 секунд</p>
-                <p>Стоимость: <span class="cost">10000</span> очков</p>
+                <p>Стоимость: <span class="cost">6000</span> очков</p>
                 <p>Уровень: <span class="level">0</span></p>
                 <button onclick="buyUpgrade(2)">Купить</button>
             </div>
@@ -360,8 +360,8 @@ transition: all 0.3s;
         <div class="prestige">
             <h3>Система перерождения</h3>
             <p>Переродитесь, чтобы получить бонусы и начать заново!</p>
-            <p>Текущий бонус: +<span id="prestige-bonus">2</span> за клик</p>
-            <p>Стоимость: <span id="prestige-cost">5000000</span> очков</p>
+            <p>Текущий бонус: +<span id="prestige-bonus">10</span> за клик</p>
+            <p>Стоимость: <span id="prestige-cost">100000</span> очков</p>
             <button id="prestige-button" onclick="prestige()">Переродиться</button>
         </div>
     </div>
@@ -372,37 +372,44 @@ transition: all 0.3s;
             points: 0,
             pointsPerClick: 1,
             level: 1,
-            prestigeBonus: 2,
-            prestigeCost: 5000000,
+            prestigeBonus: 10,
+            prestigeCost: 100000,
             prestigeCount: 0,
             upgrades: [
                 { 
                     name: "Улучшенный клик", 
-                    cost: 500, 
-                    level: 0
+                    cost: 300, 
+                    level: 0,
+                    baseCost: 300,
+                    effect: () => { return 1; } // +1 за уровень
                 },
                 { 
                     name: "Двойной клик", 
-                    cost: 2800, 
-                    level: 0
+                    cost: 1500, 
+                    level: 0,
+                    baseCost: 1500,
+                    effect: () => { return 2; } // множитель x2
                 },
                 { 
                     name: "Автокликер", 
-                    cost: 10000, 
-                    level: 0
+                    cost: 6000, 
+                    level: 0,
+                    baseCost: 6000,
+                    effect: () => { return 0; } // автоклик не влияет на pointsPerClick
                 }
             ],
-            lastSave: Date.now()
+            lastSave: Date.now(),
+            autoClickerInterval: null
         };
 
         // Устройства для кнопки
         const devices = [
             { name: "M5StickC Plus 2", image: "https://cdn1.ozone.ru/s3/multimedia-1-0/7082148672.jpg", minPoints: 0 },
-            { name: "Cardputer", image: "https://i.ebayimg.com/images/g/VV0AAOSwUDRmjCU8/s-l400.jpg", minPoints: 5000 },
+
+{ name: "Cardputer", image: "https://i.ebayimg.com/images/g/VV0AAOSwUDRmjCU8/s-l400.jpg", minPoints: 5000 },
             { name: "T-Embed", image: "https://cdn1.ozone.ru/s3/multimedia-1-c/7241902644.jpg", minPoints: 25000 },
             { name: "Chameleon Ultra", image: "https://cdn1.ozone.ru/s3/multimedia-1-m/c600/7439069182.jpg", minPoints: 100000 },
-
-{ name: "Bad USB", image: "https://cdn-icons-png.flaticon.com/512/932/932488.png", minPoints: 500000 },
+            { name: "Bad USB", image: "https://cdn-icons-png.flaticon.com/512/932/932488.png", minPoints: 500000 },
             { name: "Flipper Zero", image: "https://flipperzero.one/img/tild6630-3566-4935-b761-383762663264__sdcard_new.png", minPoints: 2000000 },
             { name: "HackRF One", image: "https://i.pinimg.com/originals/99/c7/50/99c7507ce97b4ab40e9c944605df0cda.jpg", minPoints: 10000000 },
             { name: "USB Rubber Ducky", image: "https://gd4.alicdn.com/imgextra/i1/37616918/TB2N9O6bCxjpuFjSszeXXaeMVXa_!!37616918.jpg", minPoints: 50000000 },
@@ -438,35 +445,65 @@ transition: all 0.3s;
                 const saved = localStorage.getItem('cyberClickerSave');
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    gameState = parsed;
                     
-                    // Применяем эффекты улучшений после загрузки
-                    applyUpgradeEffects();
+                    // Восстанавливаем основные данные
+                    gameState.points = parsed.points || 0;
+                    gameState.level = parsed.level || 1;
+                    gameState.prestigeBonus = parsed.prestigeBonus || 10;
+                    gameState.prestigeCost = parsed.prestigeCost || 100000;
+                    gameState.prestigeCount = parsed.prestigeCount || 0;
                     
-                    // Восстанавливаем интервалы автокликера
+                    // Восстанавливаем улучшения
+                    if (parsed.upgrades) {
+                        for (let i = 0; i < parsed.upgrades.length; i++) {
+                            gameState.upgrades[i].level = parsed.upgrades[i].level || 0;
+                            gameState.upgrades[i].cost = parsed.upgrades[i].cost || gameState.upgrades[i].baseCost;
+                        }
+                    }
+                    
+                    // Пересчитываем pointsPerClick
+                    recalculatePointsPerClick();
+                    
+                    // Восстанавливаем автокликер
                     if (gameState.upgrades[2].level > 0) {
                         startAutoClicker();
                     }
+                    
+                    // Обновляем интерфейс после загрузки
+                    updateUI();
                 }
             } catch (e) {
                 console.error('Ошибка загрузки игры:', e);
             }
         }
         
-        // Применение эффектов улучшений
-        function applyUpgradeEffects() {
-            // Улучшенный клик
-            gameState.pointsPerClick += gameState.upgrades[0].level;
+        // Пересчет pointsPerClick
+
+function recalculatePointsPerClick() {
+            let base = 1;
             
-            // Двойной клик
+            // Бонус перерождения
+            base += gameState.prestigeBonus;
+            
+            // Улучшенный клик: +1 за уровень
+            base += gameState.upgrades[0].level;
+            
+            // Двойной клик: множитель x2 за уровень
             for (let i = 0; i < gameState.upgrades[1].level; i++) {
-                gameState.pointsPerClick *= 2;
+                base *= 2;
             }
+            
+            gameState.pointsPerClick = base;
         }
         
         // Запуск автокликера
         function startAutoClicker() {
-            setInterval(() => {
+            // Останавливаем предыдущий интервал, если он есть
+            if (gameState.autoClickerInterval) {
+                clearInterval(gameState.autoClickerInterval);
+            }
+            
+            gameState.autoClickerInterval = setInterval(() => {
                 gameState.points += gameState.pointsPerClick;
                 updateUI();
                 autoSave();
@@ -498,8 +535,7 @@ transition: all 0.3s;
         
         // Обновление изображения устройства
         function updateDeviceImage() {
-
-let currentDevice = devices[0];
+            let currentDevice = devices[0];
             
             for (let i = devices.length - 1; i >= 0; i--) {
                 if (gameState.points >= devices[i].minPoints) {
@@ -543,13 +579,12 @@ let currentDevice = devices[0];
                 upgrade.cost = Math.floor(upgrade.cost * 3.5);
                 
                 // Применяем эффект улучшения
-                if (index === 0) {
-                    gameState.pointsPerClick += 1;
-                } else if (index === 1) {
-                    gameState.pointsPerClick *= 2;
-                } else if (index === 2 && upgrade.level === 1) {
+                if (index === 2 && upgrade.level === 1) {
                     startAutoClicker();
                 }
+                
+                // Пересчитываем pointsPerClick
+                recalculatePointsPerClick();
                 
                 updateUI();
                 saveGame();
@@ -564,31 +599,41 @@ let currentDevice = devices[0];
                 gameState.prestigeCount++;
                 gameState.level++;
                 
-                // Добавляем бонус перерождения
-                gameState.pointsPerClick += gameState.prestigeBonus;
+                // Добавляем бонус перерождения (+10 за каждое перерождение)
+
+const bonusPerPrestige = 100;
+                gameState.prestigeBonus = bonusPerPrestige * gameState.prestigeCount;
                 
-                // Увеличиваем бонус для следующего перерождения
-                gameState.prestigeBonus += 2;
-                
-                // Увеличиваем стоимость следующего перерождения
-                gameState.prestigeCost = Math.floor(gameState.prestigeCost * 10);
+                // Увеличиваем стоимость следующего перерождения по прогрессии: 100к, 300к, 700к, 1.5млн, 3.1млн...
+                if (gameState.prestigeCount === 1) {
+                    gameState.prestigeCost = 100000;
+                } else if (gameState.prestigeCount === 2) {
+                    gameState.prestigeCost = 300000;
+                } else if (gameState.prestigeCount === 3) {
+                    gameState.prestigeCost = 700000;
+                } else {
+                    gameState.prestigeCost = Math.floor(gameState.prestigeCost * 2.2 + 100000);
+                }
                 
                 // Сбрасываем очки и улучшения
                 gameState.points = 0;
                 gameState.upgrades.forEach(upgrade => {
                     upgrade.level = 0;
-                    // Восстанавливаем базовую стоимость улучшений
-                    if (upgrade.name === "Улучшенный клик") upgrade.cost = 500;
-                    if (upgrade.name === "Двойной клик") upgrade.cost = 2800;
-                    if (upgrade.name === "Автокликер") upgrade.cost = 10000;
+                    upgrade.cost = upgrade.baseCost;
                 });
                 
-                // Сбрасываем pointsPerClick и применяем только бонус перерождения
-                gameState.pointsPerClick = 1 + (gameState.prestigeBonus - 2);
+                // Останавливаем автокликер
+                if (gameState.autoClickerInterval) {
+                    clearInterval(gameState.autoClickerInterval);
+                    gameState.autoClickerInterval = null;
+                }
+                
+                // Пересчитываем pointsPerClick
+                recalculatePointsPerClick();
                 
                 updateUI();
                 saveGame();
-                alert(`Перерождение успешно! Вы достигли уровня ${gameState.level} и получили +${gameState.prestigeBonus-2} за клик!`);
+                alert(`Перерождение успешно! Вы достигли уровня ${gameState.level} и получили +${gameState.prestigeBonus} за клик!`);
             } else {
                 alert('Недостаточно очков для перерождения!');
             }
@@ -600,9 +645,7 @@ let currentDevice = devices[0];
             pointsPerClickElement.textContent = formatNumber(gameState.pointsPerClick);
             levelElement.textContent = gameState.level;
             prestigeCostElement.textContent = formatNumber(gameState.prestigeCost);
-            prestigeBonusElement.
-
-textContent = gameState.prestigeBonus;
+            prestigeBonusElement.textContent = gameState.prestigeBonus;
             
             // Обновляем информацию об улучшениях
             upgradeElements.forEach((element, index) => {
