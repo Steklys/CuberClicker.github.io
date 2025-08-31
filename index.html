@@ -1,686 +1,259 @@
+> Stek:
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cyber Clicker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кликер игра</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Courier New', monospace;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background-color: #0a0a1a;
-            color: #00ffea;
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
             min-height: 100vh;
-            padding: 10px;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(0, 255, 234, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(0, 255, 234, 0.05) 0%, transparent 20%);
-            touch-action: manipulation;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            padding: 20px;
         }
         
         .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            border: 1px solid #00ffea;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 0 20px rgba(0, 255, 234, 0.2);
-            background-color: rgba(10, 10, 26, 0.9);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            transition: transform 0.3s;
         }
         
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #00ffea;
+        .container:hover {
+            transform: translateY(-5px);
         }
         
         h1 {
-            font-size: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px #00ffea;
-            margin-bottom: 8px;
+            color: #6e45e2;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .score-container {
+            margin: 25px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #6e45e2, #88d3ce);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        #score {
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .click-button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin: 20px 0;
+        }
+        
+        .click-button:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+        
+        .click-button:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
         
         .stats {
             display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
             flex-wrap: wrap;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 12px;
-            background-color: rgba(0, 20, 30, 0.5);
-            border-radius: 5px;
-            border: 1px solid #00ffea;
-            gap: 10px;
         }
         
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            min-width: 100px;
-            justify-content: center;
-        }
-        
-        .click-area {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        #click-button {
-            background: linear-gradient(to bottom, #001122, #003344);
-            color: #00ffea;
-            border: 2px solid #00ffea;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 300px;
-            height: 180px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 0 15px rgba(0, 255, 234, 0.5);
-            text-transform: uppercase;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            overflow: hidden;
-            position: relative;
-            touch-action: manipulation;
-        }
-        
-        #click-button img {
-            max-width: 100px;
-            max-height: 80px;
-            margin-bottom: 8px;
-            object-fit: contain;
-        }
-        
-        #click-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(0, 255, 234, 0.8);
-        }
-        
-        #click-button:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 5px rgba(0, 255, 234, 0.8);
-        }
-        
-        .upgrades {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        
-        .upgrade {
-            background-color: rgba(0, 20, 30, 0.5);
-            border: 1px solid #00ffea;
-            border-radius: 5px;
-            padding: 12px;
-
-transition: all 0.3s;
-        }
-        
-        .upgrade:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 3px 10px rgba(0, 255, 234, 0.3);
-        }
-        
-        .upgrade h3 {
-            margin-bottom: 8px;
-            color: #00ffaa;
-            font-size: 1.1rem;
-        }
-        
-        .upgrade p {
-            margin-bottom: 12px;
-            font-size: 0.85rem;
-        }
-        
-        .upgrade button {
-            background: linear-gradient(to right, #001122, #003344);
-            color: #00ffea;
-            border: 1px solid #00ffea;
-            padding: 8px 12px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            font-size: 0.9rem;
-        }
-        
-        .upgrade button:hover {
-            background: linear-gradient(to right, #002233, #004455);
-        }
-        
-        .upgrade button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .cyber-line {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #00ffea, transparent);
-            margin: 15px 0;
-        }
-        
-        .prestige {
-            background-color: rgba(50, 0, 30, 0.5);
-            border: 1px solid #ff00aa;
-            border-radius: 5px;
-            padding: 12px;
-            text-align: center;
-            margin-top: 15px;
-        }
-        
-        .prestige h3 {
-            color: #ff00aa;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
-        
-        .prestige button {
-            background: linear-gradient(to right, #220011, #440033);
-            color: #ff00aa;
-            border: 1px solid #ff00aa;
+        .stat {
+            background: rgba(110, 69, 226, 0.1);
             padding: 10px 15px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
-            margin-top: 8px;
-            width: 100%;
-            max-width: 200px;
+            border-radius: 10px;
+            margin: 5px;
+            min-width: 120px;
         }
         
-        .prestige button:hover {
-            background: linear-gradient(to right, #330022, #550044);
+        .save-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
         
-        .prestige button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .save-notification.show {
+            opacity: 1;
         }
         
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        .device-name {
-            font-size: 0.85rem;
-            margin-top: 5px;
-            color: #00ffaa;
-        }
-
-        /* Мобильная адаптация */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
+        @media (max-width: 500px) {
             h1 {
-                font-size: 1.7rem;
+                font-size: 2rem;
             }
             
-            .stats {
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
+            #score {
+                font-size: 2.5rem;
             }
             
-            .stat-item {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            #click-button {
-                height: 150px;
-                max-width: 250px;
-            }
-            
-            #click-button img {
-                max-width: 80px;
-                max-height: 60px;
-            }
-            
-            .upgrades {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            #click-button {
-                height: 130px;
-                max-width: 220px;
-                font-size: 1rem;
-            }
-            
-            #click-button img {
-                max-width: 70px;
-                max-height: 50px;
-            }
-            
-            .upgrade h3 {
-                font-size: 1rem;
-            }
-            
-            .upgrade p {
-                font-size: 0.8rem;
+            .click-button {
+                padding: 15px 30px;
+                font-size: 1.2rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-
-<h1>Cyber Clicker</h1>
-            <p>Кликните по устройству, чтобы заработать очки и покупайте улучшения!</p>
-        </header>
+        <h1>✨ Мега Кликер ✨</h1>
+        
+        <div class="score-container">
+            <div>Ваш счет:</div>
+            <div id="score">0</div>
+        </div>
+        
+        <button class="click-button" id="clickButton">КЛИКАЙ!</button>
         
         <div class="stats">
-            <div class="stat-item">
-                <i class="fas fa-coins" style="color: gold; font-size: 1.3rem;"></i>
-                <h2><span id="points">0</span></h2>
+            <div class="stat">
+                <div>Кликов в сессии:</div>
+                <div id="sessionClicks">0</div>
             </div>
-            <div class="stat-item">
-                <i class="fas fa-mouse-pointer" style="color: #00ffaa; font-size: 1.3rem;"></i>
-                <h2><span id="points-per-click">1</span></h2>
+            <div class="stat">
+                <div>Всего кликов:</div>
+                <div id="totalClicks">0</div>
             </div>
-            <div class="stat-item">
-                <i class="fas fa-level-up-alt" style="color: #ff00aa; font-size: 1.3rem;"></i>
-                <h2>Ур. <span id="level">1</span></h2>
-            </div>
-        </div>
-        
-        <div class="click-area">
-            <button id="click-button">
-                <img id="device-image" src="https://cdn1.ozone.ru/s3/multimedia-1-0/7082148672.jpg" alt="Устройство">
-                <div class="device-name" id="device-name">M5StickC Plus 2</div>
-            </button>
-        </div>
-        
-        <div class="cyber-line"></div>
-        
-        <h2>Улучшения</h2>
-        <div class="upgrades">
-            <div class="upgrade">
-                <h3>Улучшенный клик</h3>
-                <p>Увеличивает количество очков за клик на 1</p>
-                <p>Стоимость: <span class="cost">300</span> очков</p>
-                <p>Уровень: <span class="level">0</span></p>
-                <button onclick="buyUpgrade(0)">Купить</button>
-            </div>
-            
-            <div class="upgrade">
-                <h3>Двойной клик</h3>
-                <p>Удваивает ваши очки за клик</p>
-                <p>Стоимость: <span class="cost">1500</span> очков</p>
-                <p>Уровень: <span class="level">0</span></p>
-                <button onclick="buyUpgrade(1)">Купить</button>
-            </div>
-            
-            <div class="upgrade">
-                <h3>Автокликер</h3>
-                <p>Автоматически кликает каждые 5 секунд</p>
-                <p>Стоимость: <span class="cost">6000</span> очков</p>
-                <p>Уровень: <span class="level">0</span></p>
-                <button onclick="buyUpgrade(2)">Купить</button>
-            </div>
-        </div>
-        
-        <div class="cyber-line"></div>
-        
-        <div class="prestige">
-            <h3>Система перерождения</h3>
-            <p>Переродитесь, чтобы получить бонусы и начать заново!</p>
-            <p>Текущий бонус: +<span id="prestige-bonus">10</span> за клик</p>
-            <p>Стоимость: <span id="prestige-cost">100000</span> очков</p>
-            <button id="prestige-button" onclick="prestige()">Переродиться</button>
         </div>
     </div>
 
+> Stek:
+<div class="save-notification" id="saveNotification">Прогресс сохранен!</div>
+
     <script>
-        // Игровые переменные
-        let gameState = {
-            points: 0,
-            pointsPerClick: 1,
-            level: 1,
-            prestigeBonus: 10,
-            prestigeCost: 100000,
-            prestigeCount: 0,
-            upgrades: [
-                { 
-                    name: "Улучшенный клик", 
-                    cost: 300, 
-                    level: 0,
-                    baseCost: 300,
-                    effect: () => { return 1; } // +1 за уровень
-                },
-                { 
-                    name: "Двойной клик", 
-                    cost: 1500, 
-                    level: 0,
-                    baseCost: 1500,
-                    effect: () => { return 2; } // множитель x2
-                },
-                { 
-                    name: "Автокликер", 
-                    cost: 6000, 
-                    level: 0,
-                    baseCost: 6000,
-                    effect: () => { return 0; } // автоклик не влияет на pointsPerClick
-                }
-            ],
-            lastSave: Date.now(),
-            autoClickerInterval: null
-        };
-
-        // Устройства для кнопки
-        const devices = [
-            { name: "M5StickC Plus 2", image: "https://cdn1.ozone.ru/s3/multimedia-1-0/7082148672.jpg", minPoints: 0 },
-
-{ name: "Cardputer", image: "https://i.ebayimg.com/images/g/VV0AAOSwUDRmjCU8/s-l400.jpg", minPoints: 5000 },
-            { name: "T-Embed", image: "https://cdn1.ozone.ru/s3/multimedia-1-c/7241902644.jpg", minPoints: 25000 },
-            { name: "Chameleon Ultra", image: "https://cdn1.ozone.ru/s3/multimedia-1-m/c600/7439069182.jpg", minPoints: 100000 },
-            { name: "Bad USB", image: "https://cdn-icons-png.flaticon.com/512/932/932488.png", minPoints: 500000 },
-            { name: "Flipper Zero", image: "https://flipperzero.one/img/tild6630-3566-4935-b761-383762663264__sdcard_new.png", minPoints: 2000000 },
-            { name: "HackRF One", image: "https://i.pinimg.com/originals/99/c7/50/99c7507ce97b4ab40e9c944605df0cda.jpg", minPoints: 10000000 },
-            { name: "USB Rubber Ducky", image: "https://gd4.alicdn.com/imgextra/i1/37616918/TB2N9O6bCxjpuFjSszeXXaeMVXa_!!37616918.jpg", minPoints: 50000000 },
-            { name: "LAN Turtle", image: "https://scheible.it/wp-content/uploads/2021/08/LAN-Turtle-3G.jpg", minPoints: 200000000 },
-            { name: "WiFi Pineapple", image: "https://media.proglib.io/wp-uploads/2017/07/s643144937179910298_p1_i1_w640-1024x576.jpeg", minPoints: 1000000000 },
-            { name: "Raspberry pi", image: "https://ir.ozone.ru/s3/multimedia-k/w1200/6883579352.jpg", minPoints: 5000000000 }
-        ];
-        
         // Элементы DOM
-        const pointsElement = document.getElementById('points');
-        const pointsPerClickElement = document.getElementById('points-per-click');
-        const levelElement = document.getElementById('level');
-        const clickButton = document.getElementById('click-button');
-        const deviceImage = document.getElementById('device-image');
-        const deviceName = document.getElementById('device-name');
-        const upgradeElements = document.querySelectorAll('.upgrade');
-        const prestigeButton = document.getElementById('prestige-button');
-        const prestigeCostElement = document.getElementById('prestige-cost');
-        const prestigeBonusElement = document.getElementById('prestige-bonus');
+        const scoreElement = document.getElementById('score');
+        const clickButton = document.getElementById('clickButton');
+        const sessionClicksElement = document.getElementById('sessionClicks');
+        const totalClicksElement = document.getElementById('totalClicks');
+        const saveNotification = document.getElementById('saveNotification');
         
-        // Сохранение игры
-        function saveGame() {
-            try {
-                localStorage.setItem('cyberClickerSave', JSON.stringify(gameState));
-            } catch (e) {
-                console.error('Ошибка сохранения игры:', e);
+        // Переменные игры
+        let score = 0;
+        let sessionClicks = 0;
+        let totalClicks = 0;
+        
+        // Загрузка сохраненного прогресса
+        function loadProgress() {
+            const savedScore = localStorage.getItem('clickerScore');
+            const savedTotalClicks = localStorage.getItem('clickerTotalClicks');
+            
+            if (savedScore) {
+                score = parseInt(savedScore);
+                updateScore();
+            }
+            
+            if (savedTotalClicks) {
+                totalClicks = parseInt(savedTotalClicks);
+                totalClicksElement.textContent = formatNumber(totalClicks);
             }
         }
         
-        // Загрузка игры
-        function loadGame() {
-            try {
-                const saved = localStorage.getItem('cyberClickerSave');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    
-                    // Восстанавливаем основные данные
-                    gameState.points = parsed.points || 0;
-                    gameState.level = parsed.level || 1;
-                    gameState.prestigeBonus = parsed.prestigeBonus || 10;
-                    gameState.prestigeCost = parsed.prestigeCost || 100000;
-                    gameState.prestigeCount = parsed.prestigeCount || 0;
-                    
-                    // Восстанавливаем улучшения
-                    if (parsed.upgrades) {
-                        for (let i = 0; i < parsed.upgrades.length; i++) {
-                            gameState.upgrades[i].level = parsed.upgrades[i].level || 0;
-                            gameState.upgrades[i].cost = parsed.upgrades[i].cost || gameState.upgrades[i].baseCost;
-                        }
-                    }
-                    
-                    // Пересчитываем pointsPerClick
-                    recalculatePointsPerClick();
-                    
-                    // Восстанавливаем автокликер
-                    if (gameState.upgrades[2].level > 0) {
-                        startAutoClicker();
-                    }
-                    
-                    // Обновляем интерфейс после загрузки
-                    updateUI();
-                }
-            } catch (e) {
-                console.error('Ошибка загрузки игры:', e);
-            }
-        }
-        
-        // Пересчет pointsPerClick
-
-function recalculatePointsPerClick() {
-            let base = 1;
+        // Сохранение прогресса
+        function saveProgress() {
+            localStorage.setItem('clickerScore', score);
+            localStorage.setItem('clickerTotalClicks', totalClicks);
             
-            // Бонус перерождения
-            base += gameState.prestigeBonus;
-            
-            // Улучшенный клик: +1 за уровень
-            base += gameState.upgrades[0].level;
-            
-            // Двойной клик: множитель x2 за уровень
-            for (let i = 0; i < gameState.upgrades[1].level; i++) {
-                base *= 2;
-            }
-            
-            gameState.pointsPerClick = base;
-        }
-        
-        // Запуск автокликера
-        function startAutoClicker() {
-            // Останавливаем предыдущий интервал, если он есть
-            if (gameState.autoClickerInterval) {
-                clearInterval(gameState.autoClickerInterval);
-            }
-            
-            gameState.autoClickerInterval = setInterval(() => {
-                gameState.points += gameState.pointsPerClick;
-                updateUI();
-                autoSave();
-            }, 5000);
-        }
-        
-        // Автосохранение каждые 30 секунд
-        function autoSave() {
-            const now = Date.now();
-            if (now - gameState.lastSave > 30000) {
-                saveGame();
-                gameState.lastSave = now;
-            }
+            // Показываем уведомление о сохранении
+            saveNotification.classList.add('show');
+            setTimeout(() => {
+                saveNotification.classList.remove('show');
+            }, 2000);
         }
         
         // Форматирование чисел
         function formatNumber(num) {
             if (num >= 1000000000) {
-                return (num / 1000000000).toFixed(1) + 'млрд';
+                return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + ' млрд';
             }
             if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + 'млн';
+                return (num / 1000000).toFixed(1).replace(/\.0$/, '') + ' млн';
             }
             if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'к';
+                return (num / 1000).toFixed(1).replace(/\.0$/, '') + ' тыс';
             }
-            return Math.floor(num);
+            return num;
         }
         
-        // Обновление изображения устройства
-        function updateDeviceImage() {
-            let currentDevice = devices[0];
-            
-            for (let i = devices.length - 1; i >= 0; i--) {
-                if (gameState.points >= devices[i].minPoints) {
-                    currentDevice = devices[i];
-                    break;
-                }
-            }
-            
-            deviceImage.src = currentDevice.image;
-            deviceName.textContent = currentDevice.name;
+        // Обновление счета
+        function updateScore() {
+            scoreElement.textContent = formatNumber(score);
         }
         
         // Обработчик клика
-        clickButton.addEventListener('click', () => {
-            gameState.points += gameState.pointsPerClick;
-            updateUI();
-            autoSave();
-        });
-        
-        // Обработчик касания для мобильных устройств
-        clickButton.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            gameState.points += gameState.pointsPerClick;
-            updateUI();
-            autoSave();
+        function handleClick() {
+            score++;
+            sessionClicks++;
+            totalClicks++;
             
-            // Добавляем визуальную обратную связь
+            updateScore();
+            sessionClicksElement.textContent = formatNumber(sessionClicks);
+            totalClicksElement.textContent = formatNumber(totalClicks);
+            
+            // Анимация кнопки
             clickButton.style.transform = 'scale(0.95)';
             setTimeout(() => {
-                clickButton.style.transform = '';
+                clickButton.style.transform = 'scale(1)';
             }, 100);
-        }, { passive: false });
-        
-        // Функция покупки улучшения
-        function buyUpgrade(index) {
-            const upgrade = gameState.upgrades[index];
             
-            if (gameState.points >= upgrade.cost) {
-                gameState.points -= upgrade.cost;
-                upgrade.level++;
-                upgrade.cost = Math.floor(upgrade.cost * 3.5);
-                
-                // Применяем эффект улучшения
-                if (index === 2 && upgrade.level === 1) {
-                    startAutoClicker();
-                }
-                
-                // Пересчитываем pointsPerClick
-                recalculatePointsPerClick();
-                
-                updateUI();
-                saveGame();
-            } else {
-                alert('Недостаточно очков!');
+            // Автосохранение каждые 10 кликов
+            if (totalClicks % 10 === 0) {
+                saveProgress();
             }
         }
         
-        // Функция перерождения
-        function prestige() {
-            if (gameState.points >= gameState.prestigeCost) {
-                gameState.prestigeCount++;
-                gameState.level++;
-                
-                // Добавляем бонус перерождения (+10 за каждое перерождение)
-
-const bonusPerPrestige = 100;
-                gameState.prestigeBonus = bonusPerPrestige * gameState.prestigeCount;
-                
-                // Увеличиваем стоимость следующего перерождения по прогрессии: 100к, 300к, 700к, 1.5млн, 3.1млн...
-                if (gameState.prestigeCount === 1) {
-                    gameState.prestigeCost = 100000;
-                } else if (gameState.prestigeCount === 2) {
-                    gameState.prestigeCost = 300000;
-                } else if (gameState.prestigeCount === 3) {
-                    gameState.prestigeCost = 700000;
-                } else {
-                    gameState.prestigeCost = Math.floor(gameState.prestigeCost * 2.2 + 100000);
-                }
-                
-                // Сбрасываем очки и улучшения
-                gameState.points = 0;
-                gameState.upgrades.forEach(upgrade => {
-                    upgrade.level = 0;
-                    upgrade.cost = upgrade.baseCost;
-                });
-                
-                // Останавливаем автокликер
-                if (gameState.autoClickerInterval) {
-                    clearInterval(gameState.autoClickerInterval);
-                    gameState.autoClickerInterval = null;
-                }
-                
-                // Пересчитываем pointsPerClick
-                recalculatePointsPerClick();
-                
-                updateUI();
-                saveGame();
-                alert(`Перерождение успешно! Вы достигли уровня ${gameState.level} и получили +${gameState.prestigeBonus} за клик!`);
-            } else {
-                alert('Недостаточно очков для перерождения!');
-            }
+        // Инициализация игры
+        function initGame() {
+            loadProgress();
+            
+            // Назначение обработчиков событий
+            clickButton.addEventListener('click', handleClick);
+            
+            // Автосохранение каждые 30 секунд
+            setInterval(saveProgress, 30000);
+            
+            // Сохранение при закрытии/обновлении страницы
+            window.addEventListener('beforeunload', saveProgress);
         }
         
-        // Обновление интерфейса
-        function updateUI() {
-            pointsElement.textContent = formatNumber(gameState.points);
-            pointsPerClickElement.textContent = formatNumber(gameState.pointsPerClick);
-            levelElement.textContent = gameState.level;
-            prestigeCostElement.textContent = formatNumber(gameState.prestigeCost);
-            prestigeBonusElement.textContent = gameState.prestigeBonus;
-            
-            // Обновляем информацию об улучшениях
-            upgradeElements.forEach((element, index) => {
-                const upgrade = gameState.upgrades[index];
-                element.querySelector('.cost').textContent = formatNumber(upgrade.cost);
-                element.querySelector('.level').textContent = upgrade.level;
-                
-                // Делаем кнопку неактивной, если не хватает очков
-                const button = element.querySelector('button');
-                if (gameState.points < upgrade.cost) {
-                    button.disabled = true;
-                } else {
-                    button.disabled = false;
-                }
-            });
-            
-            // Обновляем кнопку перерождения
-            if (gameState.points < gameState.prestigeCost) {
-                prestigeButton.disabled = true;
-            } else {
-                prestigeButton.disabled = false;
-            }
-
-            // Обновляем изображение устройства
-            updateDeviceImage();
-        }
-        
-        // Инициализация
-        window.addEventListener('load', () => {
-            loadGame();
-            updateUI();
-            
-            // Сохраняем игру при закрытии/обновлении страницы
-            window.addEventListener('beforeunload', saveGame);
-        });
+        // Запуск игры
+        initGame();
     </script>
 </body>
 </html>
